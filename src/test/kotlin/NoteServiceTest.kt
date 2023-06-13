@@ -1,10 +1,16 @@
+import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.test.assertFalse
 
 class NoteServiceTest {
+    private val noteService = CrudService<Note>(mutableListOf())
 
+    @Before
+    fun clear() {
+        NoteService.clear()
+    }
 
     @Test
     fun addPositive() {
@@ -75,12 +81,13 @@ class NoteServiceTest {
         val note = Note(1, "noni")
         val comment = Comment(1, "lala", false)
         service.add(note)
-        service.addComment(note,comment)
+        service.addComment(note, comment)
 
         val result = service.deleteComment(note, comment)
 
         assertTrue(result)
     }
+
     @Test
     fun deleteCommentFalse() {
         val service = NoteService
@@ -97,7 +104,7 @@ class NoteServiceTest {
         val note = Note(1, "noni")
         val comment = Comment(3, "lala", false)
         service.add(note)
-        service.addComment(note,comment)
+        service.addComment(note, comment)
         val result = service.editComment(note, comment)
         assertEquals(result, comment)
     }
@@ -110,7 +117,7 @@ class NoteServiceTest {
         service.add(note)
         service.add(note2)
         val result = service.getNotes()
-        assertEquals(result, mutableListOf(note,note2))
+        assertEquals(result, mutableListOf(note, note2))
 
     }
 
@@ -119,7 +126,7 @@ class NoteServiceTest {
         val service = NoteService
         val note = Note(1, "noni")
         service.add(note)
-         val idNote = 1
+        val idNote = 1
         val result = service.getById(idNote)
         assertEquals(result, note)
     }
@@ -129,10 +136,11 @@ class NoteServiceTest {
         val service = NoteService
         val note = Note(1, "noni")
         val comment = Comment(1, "nni", false)
+        val comment2 = Comment(22, "nerni", false)
         service.add(note)
-        service.addComment(note,comment)
-        val result = service.getComments(note).get()
-        assertEquals(result, mutableListOf(comment))
+        service.addComment(note, comment)
+        service.addComment(note, comment2)
+        val result = service.getComments(note.id)
+        assertEquals(result, mutableListOf(comment,comment2))
     }
 }
-///

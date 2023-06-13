@@ -47,13 +47,17 @@ open class CrudService<T : Elem>(val elems: MutableList<T>) {
 
 class CommentService(list: MutableList<Comment>) : CrudService<Comment>(list) {
     fun restoreComment(commentId: Int): Boolean {
-        val elemForRestore = elems.find { it.id == commentId } ?: return false
+        val elemForRestore = elems.find { it.id == commentId } ?: throw ElemNotFindException(" не найден по такому айди")
+        // тут ещё переделал на исключение -->\
         return elemForRestore.isDelete
     }
 }
 
 object NoteService {
     private val noteService = CrudService<Note>(mutableListOf())
+    fun clear() {
+        noteService.elems.clear()
+    }
 
     fun add(elem: Note) = noteService.add(elem)
     fun addComment(note: Note, comment: Comment) = CommentService(noteService.getById(note.id).comments).add(comment)
@@ -75,7 +79,9 @@ object NoteService {
         return noteService.getById(idNote)
     }
 
-    fun getComments(note: Note) = CommentService(noteService.getById(note.id).comments)
+    fun getComments(idNote: Int) : MutableList<Comment> {
+        return noteService.getById(idNote).comments
+    }
 
 }
 
