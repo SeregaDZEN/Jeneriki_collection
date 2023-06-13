@@ -143,4 +143,18 @@ class NoteServiceTest {
         val result = service.getComments(note.id)
         assertEquals(result, mutableListOf(comment,comment2))
     }
+    @Test
+    fun restoreComments() {
+        val service = NoteService
+        val note = Note(1, "noni")
+        val comment = Comment(1, "nni", true)
+        val comment2 = Comment(22, "nerni", false)
+        service.add(note)
+        service.addComment(note, comment)
+        service.addComment(note, comment2)
+        val result = service.restoreComment(note.id,comment.id)
+        val result2 =service.restoreComment(note.id,comment2.id)
+        assertTrue(result)
+        assertFalse(result2)
+    }
 }

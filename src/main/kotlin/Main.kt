@@ -47,9 +47,11 @@ open class CrudService<T : Elem>(val elems: MutableList<T>) {
 
 class CommentService(list: MutableList<Comment>) : CrudService<Comment>(list) {
     fun restoreComment(commentId: Int): Boolean {
-        val elemForRestore = elems.find { it.id == commentId } ?: throw ElemNotFindException(" не найден по такому айди")
+        val elemForRestore =
+            elems.find { it.id == commentId   && it.isDelete } ?: return false
         // тут ещё переделал на исключение -->\
-        return elemForRestore.isDelete
+        elemForRestore.isDelete = false
+        return true
     }
 }
 
@@ -65,10 +67,11 @@ object NoteService {
 
 
     fun edit(note: Note) = noteService.edit(note)
-   // fun edit2(note: Note)  : Note {  return noteService.edit(note) }
+    // fun edit2(note: Note)  : Note {  return noteService.edit(note) }
 
 
-    fun deleteComment(note: Note, comment: Comment) = CommentService(noteService.getById(note.id).comments).delete(comment.id)
+    fun deleteComment(note: Note, comment: Comment) =
+        CommentService(noteService.getById(note.id).comments).delete(comment.id)
 
     fun editComment(note: Note, comment: Comment) = CommentService(noteService.getById(note.id).comments).edit(comment)
     fun getNotes(): MutableList<Note> { // уточнить про название, если будет просто гет!
@@ -79,9 +82,11 @@ object NoteService {
         return noteService.getById(idNote)
     }
 
-    fun getComments(idNote: Int) : MutableList<Comment> {
+    fun getComments(idNote: Int): MutableList<Comment> {
         return noteService.getById(idNote).comments
     }
+
+   fun restoreComment(idNote: Int, idComment: Int) = CommentService(noteService.getById(idNote).comments).restoreComment(idComment)
 
 }
 
